@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
+import mongoengine
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-$fgx3pw)*z%@s&hc$jqzm8b!8b1#7w9=*2e8w#t1#2=^c11h_)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cronogramasService'
 ]
 
 MIDDLEWARE = [
@@ -73,17 +75,28 @@ WSGI_APPLICATION = 'ofipensiones.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cronogramas_service',
-        'USER': 'microservicios_user',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'cronogramas_service',
+#         'USER': 'microservicios_user',
+#         'PASSWORD': 'password',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+MONGODB_DATABASES = {
+    "default": {
+        "name": 'cronogramas_service',
+        "host": 'mongodb://microservicios_user:password@localhost:27017',
+        "tz_aware": True, # if you using timezones in django (USE_TZ = True)
+    },
 }
 
+mongoengine.connect(
+    db="cronogramas_service",
+    host="mongodb://microservicios_user:password@localhost:27017",
+    authentication_source="admin")
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
