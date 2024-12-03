@@ -47,12 +47,14 @@ def crear_cronogramas_para_curso(curso):
     CronogramaBaseFactory(institucionId=curso["institucionEstudianteId"],
                           nombreInstitucion=curso["nombreInstitucion"],
                           cursoId=curso["id"],
+                          grado=curso["grado"],
                           codigo=f"M-{curso['id']}",
                           nombre="Matrícula anual")
 
     CronogramaBaseFactory(institucionId=curso["institucionEstudianteId"],
                           nombreInstitucion=curso["nombreInstitucion"],
                           cursoId=curso["id"],
+                          grado=curso["grado"],
                           codigo=f"P-{curso['id']}",
                           nombre="Pensión mensual")
 
@@ -61,6 +63,7 @@ def crear_cronogramas_para_curso(curso):
         CronogramaBaseFactory(institucionId=curso["institucionEstudianteId"],
                               nombreInstitucion=curso["nombreInstitucion"],
                               cursoId=curso["id"],
+                              grado=curso["grado"],
                               codigo=f"I-{curso['id']}",
                               nombre="Curso de inglés")
 
@@ -72,14 +75,8 @@ def generar_detalles_cobro_para_instituciones():
               'Décimo', 'Undécimo']
     print(cursosGlobales)
     for cronograma in CronogramaBase.objects.all():
-        # Obtener información del curso correspondiente
-        curso = next((curso for curso in cursosGlobales if curso["id"] == cronograma.cursoId), None)
-        if not curso:
-            print(f"No se encontró información del curso para el cronograma: {cronograma.codigo}")
-            continue
-
         # Calcular el factor según el grado del curso
-        factor_grado = (grados.index(curso["grado"]) + 1) / len(grados)
+        factor_grado = (grados.index(cronograma.grado) + 1) / len(grados)
         pension_base = random.randint(100000, 250000) * factor_grado
         multiplicador_matricula = random.uniform(4, 6)
 

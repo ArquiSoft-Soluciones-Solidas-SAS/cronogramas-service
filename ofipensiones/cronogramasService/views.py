@@ -14,6 +14,7 @@ def get(request):
             "id": str(cronograma.id),
             "nombreInstitucion": cronograma.nombreInstitucion,
             "cursoId": str(cronograma.cursoId),
+            "grado": cronograma.grado,
             "codigo": cronograma.codigo,
             "nombre": cronograma.nombre,
             "detalle_cobro": [

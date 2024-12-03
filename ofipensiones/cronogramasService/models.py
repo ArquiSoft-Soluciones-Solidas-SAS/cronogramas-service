@@ -15,6 +15,7 @@ class CronogramaBase(Document):
     institucionId = fields.ObjectIdField(editable=False)
     nombreInstitucion = fields.StringField(max_length=100)
     cursoId = fields.ObjectIdField(editable=False)
+    grado = fields.StringField(max_length=50)
 
     codigo = fields.StringField(max_length=50)
     nombre = fields.StringField(max_length=100)
