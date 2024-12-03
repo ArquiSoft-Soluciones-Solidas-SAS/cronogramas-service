@@ -29,3 +29,10 @@ def get(request):
             ]
         })
     return JsonResponse({"cronogramas": resultado})
+
+@csrf_exempt
+def delete(request):
+    cronogramas = CronogramaBase.objects.all()
+    for cronograma in cronogramas:
+        cronograma.delete()
+    return JsonResponse({"mensaje": "Cronogramas eliminados"})
