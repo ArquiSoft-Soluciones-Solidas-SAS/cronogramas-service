@@ -44,23 +44,24 @@ def get_detalle_curso(request, curso_id, mes_nombre):
     """
     Obtiene los detalles del curso y mes especificado.
     """
-    # Aquí ya no necesitas request.GET.get, ya que los parámetros están en la URL
-    try:
-        cronograma = CronogramaBase.objects.get(cursoId=curso_id)
-    except DoesNotExist:
+    # Obtener todos los cronogramas que coinciden con el cursoId
+    cronogramas = CronogramaBase.objects.filter(cursoId=curso_id)
+
+    if cronogramas.count() == 0:
         return JsonResponse({"error": "Curso no encontrado"}, status=404)
 
     detalles = []
-    for detalle in cronograma.detalle_cobro:
-        if detalle.mes == mes_nombre:
-            detalles.append({
-                "id": str(detalle.id),
-                "mes": detalle.mes,
-                "valor": str(detalle.valor),
-                "fechaCausacion": detalle.fechaCausacion,
-                "fechaLimite": detalle.fechaLimite,
-                "frecuencia": detalle.frecuencia
-            })
+    for cronograma in cronogramas:
+        for detalle in cronograma.detalle_cobro:
+            if detalle.mes == mes_nombre:
+                detalles.append({
+                    "id": str(detalle.id),
+                    "mes": detalle.mes,
+                    "valor": str(detalle.valor),
+                    "fechaCausacion": detalle.fechaCausacion,
+                    "fechaLimite": detalle.fechaLimite,
+                    "frecuencia": detalle.frecuencia
+                })
 
     # Si no se encontraron detalles
     if not detalles:
