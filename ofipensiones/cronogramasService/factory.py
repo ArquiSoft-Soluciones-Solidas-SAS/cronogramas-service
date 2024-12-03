@@ -4,7 +4,7 @@ from bson import ObjectId
 from factory.mongoengine import MongoEngineFactory
 from mongoengine import DoesNotExist
 
-from models import CronogramaBase, DetalleCobroCurso
+from .models import CronogramaBase, DetalleCobroCurso
 import factory
 from django.conf import settings
 import requests
