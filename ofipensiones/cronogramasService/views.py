@@ -70,3 +70,24 @@ def get_detalle_curso(request, curso_id, mes_nombre):
         })
 
     return JsonResponse({"detalles": detalles})
+
+
+def get_all_detalles(request):
+    """
+    Obtiene todos los detalles de cobro.
+    """
+    cronogramas = CronogramaBase.objects.all()
+    detalles = []
+    for cronograma in cronogramas:
+        for detalle in cronograma.detalle_cobro:
+            detalles.append({
+                "cursoId": str(cronograma.cursoId),
+                "id": str(detalle.id),
+                "mes": detalle.mes,
+                "valor": str(detalle.valor),
+                "fechaCausacion": detalle.fechaCausacion,
+                "fechaLimite": detalle.fechaLimite,
+                "frecuencia": detalle.frecuencia
+            })
+
+    return JsonResponse({"detalles": detalles})
