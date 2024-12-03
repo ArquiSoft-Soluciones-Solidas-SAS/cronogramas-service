@@ -66,7 +66,6 @@ def crear_cronogramas_para_curso(curso):
 
 
 def generar_detalles_cobro_para_instituciones():
-    global curso
     meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
              'Noviembre', 'Diciembre']
     grados = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Séptimo', 'Octavo', 'Noveno',
@@ -74,15 +73,9 @@ def generar_detalles_cobro_para_instituciones():
     print(cursosGlobales)
     for cronograma in CronogramaBase.objects.all():
         # Obtener información del curso correspondiente
-        for curso in cursosGlobales:
-            print("curso actual: ", curso)
-            if curso["id"] == cronograma.cursoId:
-                break
-            else:
-                curso = None
-
-        if curso is None:
-            print(f"Curso no encontrado: {cronograma.cursoId}")
+        curso = next((curso for curso in cursosGlobales if curso["id"] == cronograma.cursoId), None)
+        if not curso:
+            print(f"No se encontró información del curso para el cronograma: {cronograma.codigo}")
             continue
 
         # Calcular el factor según el grado del curso
