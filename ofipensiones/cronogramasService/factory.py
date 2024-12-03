@@ -47,13 +47,13 @@ def crear_cronogramas_para_curso(curso):
     CronogramaBaseFactory(institucionId=curso["institucionEstudianteId"],
                           nombreInstitucion=curso["nombreInstitucion"],
                           cursoId=curso["id"],
-                          codigo=f"M-{curso.id}",
+                          codigo=f"M-{curso['id']}",
                           nombre="Matrícula anual")
 
     CronogramaBaseFactory(institucionId=curso["institucionEstudianteId"],
                           nombreInstitucion=curso["nombreInstitucion"],
                           cursoId=curso["id"],
-                          codigo=f"P-{curso.id}",
+                          codigo=f"P-{curso['id']}",
                           nombre="Pensión mensual")
 
     # Crear cronograma para inglés (opcional)
@@ -61,7 +61,7 @@ def crear_cronogramas_para_curso(curso):
         CronogramaBaseFactory(institucionId=curso["institucionEstudianteId"],
                               nombreInstitucion=curso["nombreInstitucion"],
                               cursoId=curso["id"],
-                              codigo=f"I-{curso.id}",
+                              codigo=f"I-{curso['id']}",
                               nombre="Curso de inglés")
 
 
