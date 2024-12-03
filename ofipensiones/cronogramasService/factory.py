@@ -11,16 +11,21 @@ import requests
 import json
 import random
 
+
 class CronogramaBaseFactory(MongoEngineFactory):
     class Meta:
         model = CronogramaBase
 
+
 cursosGlobales = []
+
+
 def obtener_cursos_embebidos():
     """
     Conecta a la base de datos remota y obtiene los cursos embebidos dentro de las instituciones.
     """
-    r = requests.get(settings.PATH_INSTITUCIONES + "/listar-instituciones/", headers={"Accept":"application/json"})
+    r = requests.get(settings.PATH_INSTITUCIONES +
+                     "/listar-instituciones/", headers={"Accept": "application/json"})
     if r.status_code != 200:
         print("Error al obtener las instituciones.")
         return []
@@ -37,10 +42,12 @@ def obtener_cursos_embebidos():
             })
     return cursosGlobales
 
+
 def crear_cronogramas_bases():
     cursos = obtener_cursos_embebidos()  # Obtener todos los cursos
     for curso in cursos:
         crear_cronogramas_para_curso(curso)
+
 
 def crear_cronogramas_para_curso(curso):
     # Crear cronograma para matrícula
@@ -96,8 +103,8 @@ def generar_detalles_cobro_para_instituciones():
             )
             detalles.append(detalle)
 
-        elif cronograma.nombre == "Pensión mensual":
-            for i, mes in enumerate(meses):
+        for i, mes in enumerate(meses):
+            if cronograma.nombre == "Pensión mensual":  # Pensión
                 if mes != "Enero":
                     valor = pension_base
                     fecha_causacion = date.today().replace(month=i + 1, day=1)
@@ -112,19 +119,20 @@ def generar_detalles_cobro_para_instituciones():
                     )
                     detalles.append(detalle)
 
-        elif cronograma.nombre == "Curso de inglés":
-            valor = 200000
-            fecha_causacion = date.today().replace(month=1, day=1)
-            fecha_limite = fecha_causacion + timedelta(weeks=2)
-            detalle = DetalleCobroCurso(
-                id=ObjectId(),
-                mes="Enero",
-                valor=valor,
-                fechaCausacion=fecha_causacion,
-                fechaLimite=fecha_limite,
-                frecuencia="Anual"
-            )
-            detalles.append(detalle)
+                elif cronograma.nombre == "Curso de inglés":
+                    if mes == 'Enero':  # O el mes que corresponda
+                        valor = 200000
+                        fecha_causacion = date.today().replace(month=1, day=1)
+                        fecha_limite = fecha_causacion + timedelta(weeks=2)
+                        detalle = DetalleCobroCurso(
+                            id=ObjectId(),
+                            mes="Enero",
+                            valor=valor,
+                            fechaCausacion=fecha_causacion,
+                            fechaLimite=fecha_limite,
+                            frecuencia="Anual"
+                        )
+                        detalles.append(detalle)
 
         # Actualizar el cronograma con los detalles generados
         try:
