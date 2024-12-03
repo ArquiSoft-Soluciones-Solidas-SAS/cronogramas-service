@@ -18,6 +18,7 @@ class CronogramaBase(Document):
 
     codigo = fields.StringField(max_length=50)
     nombre = fields.StringField(max_length=100)
+    detalle_cobro = fields.ListField(fields.EmbeddedDocumentField(DetalleCobroCurso))
 
     def __str__(self):
         return self.nombre
