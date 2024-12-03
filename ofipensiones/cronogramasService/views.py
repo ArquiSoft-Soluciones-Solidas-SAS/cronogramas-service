@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from mongoengine import DoesNotExist
 
 from .models import CronogramaBase
 
@@ -39,13 +40,19 @@ def delete(request):
     return JsonResponse({"mensaje": "Cronogramas eliminados"})
 
 @csrf_exempt
-def get_detalle_curso(request):
-    curso_id = request.GET.get('curso_id')
-    mes = request.GET.get('mes_nombre')
-    cronograma = CronogramaBase.objects.get(cursoId=curso_id)
+def get_detalle_curso(request, curso_id, mes_nombre):
+    """
+    Obtiene los detalles del curso y mes especificado.
+    """
+    # Aquí ya no necesitas request.GET.get, ya que los parámetros están en la URL
+    try:
+        cronograma = CronogramaBase.objects.get(cursoId=curso_id)
+    except DoesNotExist:
+        return JsonResponse({"error": "Curso no encontrado"}, status=404)
+
     detalles = []
     for detalle in cronograma.detalle_cobro:
-        if detalle.mes == mes:
+        if detalle.mes == mes_nombre:
             detalles.append({
                 "id": str(detalle.id),
                 "mes": detalle.mes,
@@ -54,8 +61,11 @@ def get_detalle_curso(request):
                 "fechaLimite": detalle.fechaLimite,
                 "frecuencia": detalle.frecuencia
             })
-        else:
-            detalles.append({
-                "mensaje": "No se encontraron detalles para el mes solicitado"
-            })
+
+    # Si no se encontraron detalles
+    if not detalles:
+        detalles.append({
+            "mensaje": "No se encontraron detalles para el mes solicitado"
+        })
+
     return JsonResponse({"detalles": detalles})
