@@ -16,7 +16,7 @@ def get(request):
             "cursoId": str(cronograma.cursoId),
             "codigo": cronograma.codigo,
             "nombre": cronograma.nombre,
-            "detallesCobro": [
+            "detalle_cobro": [
                 {
                     "id": str(detalle.id),
                     "mes": detalle.mes,
