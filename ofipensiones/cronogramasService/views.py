@@ -25,7 +25,7 @@ def get(request):
                     "fechaLimite": detalle.fechaLimite,
                     "frecuencia": detalle.frecuencia
                 }
-                for detalle in cronograma.detallesCobro
+                for detalle in cronograma.detalle_cobro
             ]
         })
     return JsonResponse({"cronogramas": resultado})
