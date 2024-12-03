@@ -37,3 +37,25 @@ def delete(request):
     for cronograma in cronogramas:
         cronograma.delete()
     return JsonResponse({"mensaje": "Cronogramas eliminados"})
+
+@csrf_exempt
+def get_detalle_curso(request):
+    curso_id = request.GET.get('curso_id')
+    mes = request.GET.get('mes_nombre')
+    cronograma = CronogramaBase.objects.get(cursoId=curso_id)
+    detalles = []
+    for detalle in cronograma.detalle_cobro:
+        if detalle.mes == mes:
+            detalles.append({
+                "id": str(detalle.id),
+                "mes": detalle.mes,
+                "valor": str(detalle.valor),
+                "fechaCausacion": detalle.fechaCausacion,
+                "fechaLimite": detalle.fechaLimite,
+                "frecuencia": detalle.frecuencia
+            })
+        else:
+            detalles.append({
+                "mensaje": "No se encontraron detalles para el mes solicitado"
+            })
+    return JsonResponse({"detalles": detalles})
