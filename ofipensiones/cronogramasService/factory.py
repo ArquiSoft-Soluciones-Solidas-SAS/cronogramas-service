@@ -119,24 +119,23 @@ def generar_detalles_cobro_para_instituciones():
                     )
                     detalles.append(detalle)
 
-                elif cronograma.nombre == "Curso de inglés":
-                    if mes == 'Enero':  # O el mes que corresponda
-                        valor = 200000
-                        fecha_causacion = date.today().replace(month=1, day=1)
-                        fecha_limite = fecha_causacion + timedelta(weeks=2)
-                        detalle = DetalleCobroCurso(
-                            id=ObjectId(),
-                            mes="Enero",
-                            valor=valor,
-                            fechaCausacion=fecha_causacion,
-                            fechaLimite=fecha_limite,
-                            frecuencia="Anual"
-                        )
-                        detalles.append(detalle)
+            elif cronograma.nombre == "Curso de inglés":
+                valor = 200000
+                fecha_causacion = date.today().replace(month=1, day=1)
+                fecha_limite = fecha_causacion + timedelta(weeks=2)
+                detalle = DetalleCobroCurso(
+                    id=ObjectId(),
+                    mes="Enero",
+                    valor=valor,
+                    fechaCausacion=fecha_causacion,
+                    fechaLimite=fecha_limite,
+                    frecuencia="Anual"
+                )
+                detalles.append(detalle)
 
         # Actualizar el cronograma con los detalles generados
         try:
             cronograma.update(push_all__detalle_cobro=detalles)
-            print(f"Detalles añadidos al cronograma: {cronograma.codigo}")
+            print(f"Detalles añadidos al cronograma: {detalles.__getattribute__('id')}")
         except DoesNotExist:
             print(f"Error al actualizar cronograma: {cronograma.codigo}")
