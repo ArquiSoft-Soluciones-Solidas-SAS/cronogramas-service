@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from cronogramasService.models import CronogramaBase
+from .models import CronogramaBase
 
 
 @csrf_exempt
