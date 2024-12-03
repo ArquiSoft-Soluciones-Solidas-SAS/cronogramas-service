@@ -136,6 +136,6 @@ def generar_detalles_cobro_para_instituciones():
         # Actualizar el cronograma con los detalles generados
         try:
             cronograma.update(push_all__detalle_cobro=detalles)
-            print(f"Detalles añadidos al cronograma: {detalles.__getattribute__('id')}")
+            print("Detalles añadidos al cronograma")
         except DoesNotExist:
-            print(f"Error al actualizar cronograma: {cronograma.codigo}")
+            print("Error al actualizar cronograma")
