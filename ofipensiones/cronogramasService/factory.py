@@ -1,15 +1,14 @@
 from datetime import date, timedelta
-
 from bson import ObjectId
 from factory.mongoengine import MongoEngineFactory
 from mongoengine import DoesNotExist
-
 from .models import CronogramaBase, DetalleCobroCurso
 import factory
 from django.conf import settings
 import requests
 import json
 import random
+from .utils import send_to_rabbitmq
 
 
 class CronogramaBaseFactory(MongoEngineFactory):
@@ -31,7 +30,6 @@ def obtener_cursos_embebidos():
         return []
     instituciones = r.json()["instituciones"]
     print("Instituciones obtenidas exitosamente.")
-    print("Instituciones: ", instituciones)
     for institucion in instituciones:
         for curso in institucion["cursos"]:
             cursosGlobales.append({
@@ -73,6 +71,41 @@ def crear_cronogramas_para_curso(curso):
                               grado=curso["grado"],
                               codigo=f"I-{curso['id']}",
                               nombre="Curso de inglés")
+
+
+def send_to_queue(c):
+    """
+    Publica un mensaje en RabbitMQ después de crear el cronograma.
+    """
+    message = {
+        "type": "cronograma_created",
+        "data": {
+            "id": str(c.id),
+            "institucionId": str(c.institucionId),
+            "nombreInstitucion": c.nombreInstitucion,
+            "cursoId": str(c.cursoId),
+            "codigo": c.codigo,
+            "nombre": c.nombre,
+            "grado": c.grado,
+            "detalle_cobro": [
+                {
+                    "id": str(detalle.id),
+                    "mes": detalle.mes,
+                    "valor": str(detalle.valor),
+                    "fechaCausacion": str(detalle.fechaCausacion),
+                    "fechaLimite": str(detalle.fechaLimite),
+                    "frecuencia": detalle.frecuencia
+                }
+                for detalle in c.detalle_cobro
+            ]
+
+        }
+    }
+    send_to_rabbitmq(
+        exchange='cronogramas',
+        routing_key='cronograma.created',
+        message=message
+    )
 
 
 def generar_detalles_cobro_para_instituciones():
@@ -137,6 +170,8 @@ def generar_detalles_cobro_para_instituciones():
         # Actualizar el cronograma con los detalles generados
         try:
             cronograma.update(push_all__detalle_cobro=detalles)
+            cronograma.reload()  # Recargar el objeto actualizado desde la base de datos
+            send_to_queue(cronograma)  # Enviar el cronograma recargado
             print("Detalles añadidos al cronograma")
         except DoesNotExist:
             print("Error al actualizar cronograma")
